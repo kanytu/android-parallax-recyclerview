@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -19,18 +20,24 @@ public class ParallaxRecyclerAdapter extends RecyclerView.Adapter<ParallaxRecycl
     private final List<String> mData;
     private CustomRelativeWrapper mHeader;
 
+
+    public void addItem(String item, int position) {
+        mData.add(position, item);
+        notifyItemInserted(position + 1); //we have to add 1 to the notification position since we don't want to mess with the header
+    }
+
     public ParallaxRecyclerAdapter(List<String> myData) {
         mData = myData;
     }
 
-    public void translateHeader(float offset) {
-        mHeader.setTranslationY(offset);
-        mHeader.setClipY(Math.round(offset));
+    public void translateHeader(float of) {
+        mHeader.setTranslationY(of);
+        mHeader.setClipY(Math.round(of));
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        if (i == 1) {
+        if (i == 1) { //if viewtype==1 then it's the header
             mHeader = new CustomRelativeWrapper(viewGroup.getContext());
             mHeader.addView(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.my_header, mHeader, false));
             return new ViewHolder(mHeader);
@@ -40,23 +47,27 @@ public class ParallaxRecyclerAdapter extends RecyclerView.Adapter<ParallaxRecycl
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-
+        if (i != 0) {//only bind the rows, not the header(i==0)
+            viewHolder.textView.setText(mData.get(i - 1)); //notice the (i-1). You must do this because onBindViewHolder will have the header (i==0) into account.
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position == 0 ? 1 : 2;
+        return position == 0 ? 1 : 2;//position==0 -> header | position!=0 -> row
     }
 
     @Override
     public int getItemCount() {
-        return mData == null ? 0 : mData.size() + 1;
+        return mData == null ? 0 : mData.size() + 1; //remember to add 1 to the getItemCount because of the header.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
+        public TextView textView;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            textView = (TextView) itemView.findViewById(R.id.textView);
         }
     }
 
@@ -70,7 +81,7 @@ public class ParallaxRecyclerAdapter extends RecyclerView.Adapter<ParallaxRecycl
 
         @Override
         protected void dispatchDraw(Canvas canvas) {
-            canvas.clipRect(new Rect(getLeft(), getTop(), getRight(), getBottom() + mOffset));
+            canvas.clipRect(new Rect(getLeft(), getTop(), getRight(), getBottom() + mOffset)); //this will clip the header so our rows don't overlap the header
             super.dispatchDraw(canvas);
         }
 

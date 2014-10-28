@@ -8,7 +8,6 @@ import android.util.AttributeSet;
  * Created by poliveira on 27/10/2014.
  */
 public class ParallaxRecyclerView extends RecyclerView {
-    private int mCurrentOffset;
 
     public ParallaxRecyclerView(Context context) {
         super(context);
@@ -30,18 +29,11 @@ public class ParallaxRecyclerView extends RecyclerView {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                mCurrentOffset += dy;
-                ((ParallaxRecyclerAdapter) getAdapter()).translateHeader(mCurrentOffset * 0.5f);
+                ViewHolder holder = findViewHolderForPosition(0);
+                if (holder != null)
+                    ((ParallaxRecyclerAdapter) getAdapter()).translateHeader(-holder.itemView.getTop() * 0.5f);
             }
         });
-    }
-
-    public int getCurrentOffset() {
-        return mCurrentOffset;
-    }
-
-    public void setCurrentOffset(int currentOffset) {
-        mCurrentOffset = currentOffset;
     }
 
 }
