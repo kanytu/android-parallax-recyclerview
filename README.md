@@ -46,3 +46,4 @@ There a few other listeners you can implement:
 
 
 ![ParallaxListView](https://raw.githubusercontent.com/kanytu/android-parallax-recycleview/master/screenshots/screenshot.gif)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-android--parallax--recyclerview-brightgreen.svg?style=flat)](https://android-arsenal.com/details/3/1095)
