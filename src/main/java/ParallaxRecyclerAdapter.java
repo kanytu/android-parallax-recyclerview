@@ -13,6 +13,8 @@ import java.util.List;
  * Created by poliveira on 03/11/2014.
  */
 public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final float SCROLL_MULTIPLIER = 0.5f;
+
     private class VIEW_TYPES {
         public static final int NORMAL = 1;
         public static final int HEADER = 2;
@@ -25,6 +27,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
         int getItemCount();
     }
+
 
     public interface OnClickEvent {
         /**
@@ -54,10 +57,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public OnParallaxScroll mParallaxScroll;
 
     public void translateHeader(float of) {
-        mHeader.setTranslationY(of * 0.5f);
-        mHeader.setClipY(Math.round(of * 0.5f));
+        float ofCalculated = of * SCROLL_MULTIPLIER;
+        mHeader.setTranslationY(ofCalculated);
+        mHeader.setClipY(Math.round(ofCalculated));
         if (mParallaxScroll != null) {
-            float left = Math.min(1, (of / (mHeader.getHeight() * 0.5f)));
+            float left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
         }
     }
@@ -111,6 +115,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
     public void setOnParallaxScroll(OnParallaxScroll parallaxScroll) {
         mParallaxScroll = parallaxScroll;
+        mParallaxScroll.onParallaxScroll(0, 0, mHeader);
     }
 
     public ParallaxRecyclerAdapter(List<T> data) {

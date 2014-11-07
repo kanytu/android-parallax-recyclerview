@@ -43,7 +43,23 @@ There a few other listeners you can implement:
 
          void onParallaxScroll(float percentage, float offset, View parallax); //Event triggered when the parallax is being scrolled.
 
+**RESULT**
+
 ![ParallaxListView](https://raw.githubusercontent.com/kanytu/android-parallax-recycleview/master/screenshots/screenshot.gif)
+
+
+**COOL EFFECTS YOU CAN DO WITH THIS LIBRARY**
+
+ - Transparent toolbar effect
+
+            @Override
+            public void onParallaxScroll(float percentage, float offset, View parallax) {
+                Drawable c = mToolbar.getBackground();
+                c.setAlpha(Math.round(percentage * 255));
+                mToolbar.setBackground(c);
+            }
+
+![ParallaxListView](https://raw.githubusercontent.com/kanytu/android-parallax-recycleview/master/screenshots/parallaxtoolbar.gif)
 
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-android--parallax--recyclerview-brightgreen.svg?style=flat)](https://android-arsenal.com/details/3/1095)
