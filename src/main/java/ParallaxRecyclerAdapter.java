@@ -18,6 +18,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private class VIEW_TYPES {
         public static final int NORMAL = 1;
         public static final int HEADER = 2;
+        public static final int FIRST_VIEW = 3;
     }
 
     public interface RecyclerAdapterMethods {
@@ -54,7 +55,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private CustomRelativeWrapper mHeader;
     private RecyclerAdapterMethods mRecyclerAdapterMethods;
     private OnClickEvent mOnClickEvent;
-    public OnParallaxScroll mParallaxScroll;
+    private OnParallaxScroll mParallaxScroll;
+    private RecyclerView mRecyclerView;
 
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
@@ -67,6 +69,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     }
 
     public void setParallaxHeader(View header, final RecyclerView view) {
+        mRecyclerView = view;
         mHeader = new CustomRelativeWrapper(header.getContext());
         mHeader.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mHeader.addView(header, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -106,6 +109,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
         if (i == VIEW_TYPES.HEADER && mHeader != null)
             return new ViewHolder(mHeader);
+        if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
+            RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
+            if (holder != null)
+                translateHeader(-holder.itemView.getTop());
+        }
         return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
     }
 
@@ -156,6 +164,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public int getItemViewType(int position) {
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
+        if (position == 1)
+            return VIEW_TYPES.FIRST_VIEW;
         return position == 0 ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
     }
 

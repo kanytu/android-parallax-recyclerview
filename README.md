@@ -66,7 +66,7 @@ There a few other listeners you can implement:
 
 
 ## License
-Copyright (c) 2011 Pedro Oliveira
+Copyright (c) 2014 Pedro Oliveira
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
