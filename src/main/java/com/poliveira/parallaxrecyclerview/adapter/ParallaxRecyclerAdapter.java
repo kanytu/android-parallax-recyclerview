@@ -1,3 +1,5 @@
+package com.poliveira.parallaxrecyclerview.adapter;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -152,9 +154,10 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         notifyItemRemoved(position + (mHeader == null ? 0 : 1));
     }
 
-    @Override
 
     public int getItemCount() {
+
+
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
         return mRecyclerAdapterMethods.getItemCount() + (mHeader == null ? 0 : 1);

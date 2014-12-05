@@ -5,18 +5,12 @@ android {
     buildToolsVersion "21.1.1"
 
     defaultConfig {
-        applicationId "com.poliveira.apps.parallaxrecyclerview"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
     }
-    buildTypes {
-        release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+
 }
 
 dependencies {
