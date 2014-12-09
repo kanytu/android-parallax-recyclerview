@@ -3,9 +3,11 @@ package com.poliveira.parallaxrecyclerview.adapter;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import java.util.List;
@@ -62,7 +64,14 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
-        mHeader.setTranslationY(ofCalculated);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mHeader.setTranslationY(ofCalculated);
+        } else {
+            TranslateAnimation anim = new TranslateAnimation(0, 0, ofCalculated, ofCalculated);
+            anim.setFillAfter(true);
+            anim.setDuration(0);
+            mHeader.startAnimation(anim);
+        }
         mHeader.setClipY(Math.round(ofCalculated));
         if (mParallaxScroll != null) {
             float left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
