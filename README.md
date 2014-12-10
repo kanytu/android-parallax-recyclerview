@@ -2,6 +2,9 @@ android-parallax-recycleview
 ============================
 **USAGE**
 
+(Example project - https://github.com/kanytu/example-parallaxrecycler)
+
+
  - Create your object list and pass it to the constructor of `ParallaxRecyclerAdapter`
 
 ```java
