@@ -61,6 +61,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private OnClickEvent mOnClickEvent;
     private OnParallaxScroll mParallaxScroll;
     private RecyclerView mRecyclerView;
+    private int mTotalYScrolled;
 
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
@@ -89,9 +90,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (mHeader != null) {
-                    RecyclerView.ViewHolder holder = view.findViewHolderForPosition(0);
-                    if (holder != null)
-                        translateHeader(-holder.itemView.getTop());
+                    mTotalYScrolled += dy;
+                    translateHeader(mTotalYScrolled);
                 }
             }
         });
@@ -122,8 +122,10 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
             return new ViewHolder(mHeader);
         if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
             RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
-            if (holder != null)
+            if (holder != null) {
                 translateHeader(-holder.itemView.getTop());
+                mTotalYScrolled = -holder.itemView.getTop();
+            }
         }
         return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
     }
