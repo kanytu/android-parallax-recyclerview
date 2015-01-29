@@ -62,7 +62,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private OnParallaxScroll mParallaxScroll;
     private RecyclerView mRecyclerView;
     private int mTotalYScrolled;
-    private boolean mShouldClickView = true;
+    private boolean mShouldClipView = true;
 
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
@@ -83,7 +83,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
     public void setParallaxHeader(View header, final RecyclerView view) {
         mRecyclerView = view;
-        mHeader = new CustomRelativeWrapper(header.getContext(), mShouldClickView);
+        mHeader = new CustomRelativeWrapper(header.getContext(), mShouldClipView);
         mHeader.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mHeader.addView(header, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         view.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -135,8 +135,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         mOnClickEvent = onClickEvent;
     }
 
-    public boolean isShouldClickView() {
-        return mShouldClickView;
+    public boolean isShouldClipView() {
+        return mShouldClipView;
     }
 
     /**
@@ -144,8 +144,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
      *
      * @param shouldClickView
      */
-    public void setShouldClickView(boolean shouldClickView) {
-        mShouldClickView = shouldClickView;
+    public void setShouldClipView(boolean shouldClickView) {
+        mShouldClipView = shouldClickView;
     }
 
     public void setOnParallaxScroll(OnParallaxScroll parallaxScroll) {
