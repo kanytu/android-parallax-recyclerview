@@ -1,4 +1,4 @@
-package com.poliveira.parallaxrecyclerview.adapter;
+package com.poliveira.parallaxrecycleradapter;
 
 import android.content.Context;
 import android.graphics.PointF;

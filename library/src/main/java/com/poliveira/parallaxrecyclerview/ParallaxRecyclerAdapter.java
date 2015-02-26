@@ -1,4 +1,4 @@
-package com.poliveira.parallaxrecyclerview.adapter;
+package com.poliveira.parallaxrecycleradapter;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -19,7 +19,7 @@ import java.util.List;
 public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final float SCROLL_MULTIPLIER = 0.5f;
 
-    private class VIEW_TYPES {
+    public static class VIEW_TYPES {
         public static final int NORMAL = 1;
         public static final int HEADER = 2;
         public static final int FIRST_VIEW = 3;
@@ -64,6 +64,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private int mTotalYScrolled;
     private boolean mShouldClipView = true;
 
+    /**
+     * Translates the adapter in Y
+     *
+     * @param of offset in px
+     */
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -81,6 +86,12 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         }
     }
 
+    /**
+     * Set the view as header.
+     *
+     * @param header The inflated header
+     * @param view   The RecyclerView to set scroll listeners
+     */
     public void setParallaxHeader(View header, final RecyclerView view) {
         mRecyclerView = view;
         mHeader = new CustomRelativeWrapper(header.getContext(), mShouldClipView);
@@ -131,9 +142,17 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
     }
 
+    /**
+     * @return true if there is a header on this adapter, false otherwise
+     */
+    public boolean hasHeader() {
+        return mHeader != null;
+    }
+
     public void setOnClickEvent(OnClickEvent onClickEvent) {
         mOnClickEvent = onClickEvent;
     }
+
 
     public boolean isShouldClipView() {
         return mShouldClipView;
@@ -181,8 +200,6 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
 
     public int getItemCount() {
-
-
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
         return mRecyclerAdapterMethods.getItemCount() + (mHeader == null ? 0 : 1);
@@ -197,6 +214,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         return position == 0 ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
     }
 
+    /**
+     * You must call this method to set your normal adapter methods
+     *
+     * @param callbacks
+     */
     public void implementRecyclerAdapterMethods(RecyclerAdapterMethods callbacks) {
         mRecyclerAdapterMethods = callbacks;
     }
