@@ -20,9 +20,9 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     private final float SCROLL_MULTIPLIER = 0.5f;
 
     public static class VIEW_TYPES {
-        public static final int NORMAL = 1;
-        public static final int HEADER = 2;
-        public static final int FIRST_VIEW = 3;
+        //public static final int NORMAL = 1;
+        public static final int HEADER = -1;
+        public static final int FIRST_VIEW = -2;
     }
 
     public interface RecyclerAdapterMethods {
@@ -31,6 +31,8 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i);
 
         int getItemCount();
+
+        int getItemViewType(int position);
     }
 
 
@@ -113,10 +115,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
-        if (i != 0 && mHeader != null) {
-            mRecyclerAdapterMethods.onBindViewHolder(viewHolder, i - 1);
-        } else if (i != 0)
+        if (mHeader == null) {
             mRecyclerAdapterMethods.onBindViewHolder(viewHolder, i);
+        } else if (i != 0) {
+            mRecyclerAdapterMethods.onBindViewHolder(viewHolder, i - 1);
+        }
         if (mOnClickEvent != null)
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -130,15 +133,21 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
-        if (i == VIEW_TYPES.HEADER && mHeader != null)
-            return new ViewHolder(mHeader);
-        if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
-            RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
-            if (holder != null) {
-                translateHeader(-holder.itemView.getTop());
-                mTotalYScrolled = -holder.itemView.getTop();
+        if (mHeader == null) {
+            return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
+        } else {
+            if (i == VIEW_TYPES.HEADER) {
+                return new ViewHolder(mHeader);
+            } else if (i == VIEW_TYPES.FIRST_VIEW && mRecyclerView != null) {
+                RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
+                if (holder != null) {
+                    translateHeader(-holder.itemView.getTop());
+                    mTotalYScrolled = -holder.itemView.getTop();
+                }
+                return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, mRecyclerAdapterMethods.getItemViewType(0));
             }
         }
+
         return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
     }
 
@@ -209,9 +218,22 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public int getItemViewType(int position) {
         if (mRecyclerAdapterMethods == null)
             throw new NullPointerException("You must call implementRecyclerAdapterMethods");
-        if (position == 1)
-            return VIEW_TYPES.FIRST_VIEW;
-        return position == 0 ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
+        if (mHeader != null) {
+            if (position == 0) {
+                return VIEW_TYPES.HEADER;
+            } else if (position == 1) {
+                return VIEW_TYPES.FIRST_VIEW;
+            }
+            if (mRecyclerAdapterMethods.getItemViewType(position - 1) < 0) {
+                throw new IllegalArgumentException("RecyclerAdapterMethods.getItemViewType() should >=0");
+            }
+            return mRecyclerAdapterMethods.getItemViewType(position - 1);
+        }
+
+        if (mRecyclerAdapterMethods.getItemViewType(position) < 0) {
+            throw new IllegalArgumentException("RecyclerAdapterMethods.getItemViewType() should >=0");
+        }
+        return mRecyclerAdapterMethods.getItemViewType(position);
     }
 
     /**

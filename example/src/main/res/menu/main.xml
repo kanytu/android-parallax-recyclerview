@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:title="Change Adapter"/>
+        android:id="@+id/simple_adapter"
+        android:title="Simple Adapter" />
+    <item
+        android:id="@+id/different_type_adapter"
+        android:title="Different Type Adapter" />
+    <item
+        android:id="@+id/card_view_adapter"
+        android:title="Card View Adapter" />
 </menu>

@@ -8,9 +8,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.poliveira.parallaxrecycleradapter.HeaderLayoutManagerFixed;
 import com.poliveira.parallaxrecycleradapter.ParallaxRecyclerAdapter;
 
@@ -31,17 +31,22 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
-        createAdapter(mRecyclerView);
+        createAdapter(mRecyclerView, false);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (isNormalAdapter) {
-            createCardAdapter(mRecyclerView);
-        } else {
-            createAdapter(mRecyclerView);
+        switch (item.getItemId()) {
+            case R.id.simple_adapter:
+                createAdapter(mRecyclerView, false);
+                break;
+            case R.id.different_type_adapter:
+                createAdapter(mRecyclerView, true);
+                break;
+            case R.id.card_view_adapter:
+                createCardAdapter(mRecyclerView);
+                break;
         }
-        isNormalAdapter = !isNormalAdapter;
         return super.onOptionsItemSelected(item);
     }
 
@@ -87,11 +92,16 @@ public class MainActivity extends Activity {
             public int getItemCount() {
                 return content.size();
             }
+
+            @Override
+            public int getItemViewType(int position) {
+                return 0;
+            }
         });
         recyclerView.setAdapter(adapter);
     }
 
-    private void createAdapter(RecyclerView recyclerView) {
+    private void createAdapter(RecyclerView recyclerView, final boolean differentType) {
         final List<String> content = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             content.add("item " + i);
@@ -102,27 +112,56 @@ public class MainActivity extends Activity {
         adapter.setParallaxHeader(header, recyclerView);
         adapter.setData(content);
         adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
+            final int VIEW_TYPE_1 = 0;
+            final int VIEW_TYPE_2 = 1;
+
             @Override
             public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+                int itemViewType = getItemViewType(i);
+                if (itemViewType == VIEW_TYPE_1)
+                    ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+                else
+                    ((DifferentViewHolder) viewHolder).imageView.setImageResource(R.drawable.wallpaper);
             }
 
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-                final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
-                //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
-                holder.textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(MainActivity.this, "You clicked '" + adapter.getData().get(holder.getPosition() - (adapter.hasHeader() ? 1 : 0)) + "'", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return holder;
+                if (i == VIEW_TYPE_1) {
+                    final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
+                    //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
+                    holder.textView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(MainActivity.this, "You clicked '" + adapter.getData().get(holder.getPosition() - (adapter.hasHeader() ? 1 : 0)) + "'", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return holder;
+                } else {
+                    final DifferentViewHolder holder = new DifferentViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview_different, viewGroup, false));
+                    holder.imageView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(MainActivity.this, "You clicked '" + adapter.getData().get(holder.getPosition() - (adapter.hasHeader() ? 1 : 0)) + "'", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    return holder;
+                }
             }
 
             @Override
             public int getItemCount() {
                 return content.size();
+            }
+
+            @Override
+            public int getItemViewType(int position) {
+                if (differentType) {
+                    if (position % 2 == 0)
+                        return VIEW_TYPE_2;
+
+                }
+                return VIEW_TYPE_1;
             }
         });
         recyclerView.setAdapter(adapter);
@@ -137,4 +176,15 @@ public class MainActivity extends Activity {
             textView = (TextView) itemView.findViewById(R.id.textView);
         }
     }
+
+    static class DifferentViewHolder extends RecyclerView.ViewHolder {
+        public ImageView imageView;
+
+        public DifferentViewHolder(View itemView) {
+            super(itemView);
+            imageView = (ImageView) itemView.findViewById(R.id.imageView);
+        }
+    }
+
+
 }
