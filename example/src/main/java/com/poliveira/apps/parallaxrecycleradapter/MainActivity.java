@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.poliveira.parallaxrecycleradapter.HeaderLayoutManagerFixed;
-import com.poliveira.parallaxrecycleradapter.ParallaxRecyclerAdapter;
+import com.poliveira.parallaxrecyclerview.HeaderLayoutManagerFixed;
+import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

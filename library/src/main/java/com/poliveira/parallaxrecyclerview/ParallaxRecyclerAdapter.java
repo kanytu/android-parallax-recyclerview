@@ -1,4 +1,4 @@
-package com.poliveira.parallaxrecycleradapter;
+package com.poliveira.parallaxrecyclerview;
 
 import android.content.Context;
 import android.graphics.Canvas;
