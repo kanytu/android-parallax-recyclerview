@@ -66,8 +66,8 @@ public class MainActivity extends Activity {
         adapter.setData(content);
         adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
             @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(position));
             }
 
             @Override
@@ -103,8 +103,8 @@ public class MainActivity extends Activity {
         adapter.setData(content);
         adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
             @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(position));
             }
 
             @Override
