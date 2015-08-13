@@ -36,7 +36,9 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
 
     public abstract IVH onCreateItemViewHolder(ViewGroup viewGroup);
 
-    public abstract void onBindHeaderViewHolder(HVH viewHolder, final int position);
+    public void onBindHeaderViewHolder(HVH viewHolder, final int position) {
+
+    }
 
     public abstract void onBindItemViewHolder(IVH viewHolder, final int position);
 
