@@ -22,6 +22,19 @@ android-parallax-recyclerview
 
 (There is an example in `example` folder and in https://github.com/kanytu/example-parallaxrecycler)
 
+ - Create a ViewHolder for your items
+
+ ```java
+ public class ExampleItemViewHolder extends RecyclerView.ViewHolder {
+     public TextView textView;
+
+     public ExampleItemViewHolder(View itemView) {
+         super(itemView);
+         textView = (TextView) itemView.findViewById(R.id.textView);
+     }
+ }
+ ```
+
  - Create a subclass of `ParallaxRecyclerAdapter` with the desired content
 
 ```java
