@@ -112,6 +112,18 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
         return getItemCountWithoutHeader() + 1;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        switch (position) {
+            case 0:
+                return VIEW_TYPES.HEADER;
+            case 1:
+                return VIEW_TYPES.FIRST_VIEW;
+            default:
+                return VIEW_TYPES.NORMAL;
+        }
+    }
+
     static class CustomRelativeWrapper extends RelativeLayout {
         private int mOffset;
         private boolean mShouldClip;
