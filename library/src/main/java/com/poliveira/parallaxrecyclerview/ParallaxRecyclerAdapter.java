@@ -28,7 +28,9 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     private int mTotalYScrolled;
     private boolean mShouldClipView = true;
 
-    public abstract void onParallaxScroll(float percentage, float offset, View parallax);
+    public void onParallaxScroll(float percentage, float offset, View parallax) {
+
+    }
 
     public abstract HVH onCreateHeaderViewHolder(ViewGroup viewGroup);
 
