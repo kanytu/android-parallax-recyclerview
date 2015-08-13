@@ -28,14 +28,16 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     private int mTotalYScrolled;
     private boolean mShouldClipView = true;
 
+    @SuppressWarnings("UnusedParameters")
     public void onParallaxScroll(float percentage, float offset, View parallax) {
 
     }
 
-    public abstract HVH onCreateHeaderViewHolder(ViewGroup viewGroup);
+    public abstract HVH onCreateHeaderViewHolder(ViewGroup parent);
 
-    public abstract IVH onCreateItemViewHolder(ViewGroup viewGroup);
+    public abstract IVH onCreateItemViewHolder(ViewGroup parent);
 
+    @SuppressWarnings("UnusedParameters")
     public void onBindHeaderViewHolder(HVH viewHolder, final int position) {
 
     }
@@ -93,9 +95,9 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPES.HEADER) {
-            return onCreateHeaderViewHolder(viewGroup);
+            return onCreateHeaderViewHolder(parent);
         }
         if (viewType == VIEW_TYPES.FIRST_VIEW && mRecyclerView != null) {
             RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
@@ -104,7 +106,7 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
                 mTotalYScrolled = -holder.itemView.getTop();
             }
         }
-        return onCreateItemViewHolder(viewGroup);
+        return onCreateItemViewHolder(parent);
     }
 
     @SuppressWarnings("unused")
