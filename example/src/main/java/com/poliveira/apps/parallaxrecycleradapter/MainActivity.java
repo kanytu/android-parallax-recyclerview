@@ -17,9 +17,6 @@ import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by poliveira on 26/02/2015.
- */
 public class MainActivity extends Activity {
 
     private boolean isNormalAdapter = false;
@@ -56,22 +53,15 @@ public class MainActivity extends Activity {
         for (int i = 0; i < 50; i++) {
             content.add("item " + i);
         }
-        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<>(content);
-        HeaderLayoutManagerFixed layoutManagerFixed = new HeaderLayoutManagerFixed(this);
-        recyclerView.setLayoutManager(layoutManagerFixed);
-        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
-        layoutManagerFixed.setHeaderIncrementFixer(header);
-        adapter.setShouldClipView(false);
-        adapter.setParallaxHeader(header, recyclerView);
-        adapter.setData(content);
-        adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
+
+        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
                 ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
             }
 
             @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<String> adapter, int i) {
                 final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview_cards, viewGroup, false));
                 //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
                 holder.textView.setOnClickListener(new View.OnClickListener() {
@@ -84,10 +74,18 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public int getItemCount() {
+            public int getItemCountImpl(ParallaxRecyclerAdapter<String> adapter) {
                 return content.size();
             }
-        });
+        };
+
+        HeaderLayoutManagerFixed layoutManagerFixed = new HeaderLayoutManagerFixed(this);
+        recyclerView.setLayoutManager(layoutManagerFixed);
+        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
+        layoutManagerFixed.setHeaderIncrementFixer(header);
+        adapter.setShouldClipView(false);
+        adapter.setParallaxHeader(header, recyclerView);
+        adapter.setData(content);
         recyclerView.setAdapter(adapter);
     }
 
@@ -96,19 +94,15 @@ public class MainActivity extends Activity {
         for (int i = 0; i < 50; i++) {
             content.add("item " + i);
         }
-        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<>(content);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
-        adapter.setParallaxHeader(header, recyclerView);
-        adapter.setData(content);
-        adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
+
+        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
                 ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
             }
 
             @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<String> adapter, int i) {
                 final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
                 //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
                 holder.textView.setOnClickListener(new View.OnClickListener() {
@@ -121,10 +115,15 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public int getItemCount() {
+            public int getItemCountImpl(ParallaxRecyclerAdapter<String> adapter) {
                 return content.size();
             }
-        });
+        };
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
+        adapter.setParallaxHeader(header, recyclerView);
+        adapter.setData(content);
         recyclerView.setAdapter(adapter);
     }
 

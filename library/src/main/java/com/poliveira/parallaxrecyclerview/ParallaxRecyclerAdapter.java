@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
@@ -12,12 +13,8 @@ import android.widget.RelativeLayout;
 
 import java.util.List;
 
-
-/**
- * Created by poliveira on 03/11/2014.
- */
-public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final float SCROLL_MULTIPLIER = 0.5f;
+public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final float SCROLL_MULTIPLIER = 0.5f;
 
     public static class VIEW_TYPES {
         public static final int NORMAL = 1;
@@ -25,14 +22,11 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         public static final int FIRST_VIEW = 3;
     }
 
-    public interface RecyclerAdapterMethods {
-        void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i);
+    public abstract void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder,ParallaxRecyclerAdapter<T> adapter,  int i);
 
-        RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i);
+    public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup,ParallaxRecyclerAdapter<T> adapter, int i);
 
-        int getItemCount();
-    }
-
+    public abstract int getItemCountImpl(ParallaxRecyclerAdapter<T> adapter);
 
     public interface OnClickEvent {
         /**
@@ -57,11 +51,9 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
     private List<T> mData;
     private CustomRelativeWrapper mHeader;
-    private RecyclerAdapterMethods mRecyclerAdapterMethods;
     private OnClickEvent mOnClickEvent;
     private OnParallaxScroll mParallaxScroll;
     private RecyclerView mRecyclerView;
-    private int mTotalYScrolled;
     private boolean mShouldClipView = true;
 
     /**
@@ -102,8 +94,7 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (mHeader != null) {
-                    mTotalYScrolled += dy;
-                    translateHeader(mTotalYScrolled);
+                    translateHeader(mRecyclerView.computeVerticalScrollOffset());
                 }
             }
         });
@@ -111,35 +102,31 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
-        if (mRecyclerAdapterMethods == null)
-            throw new NullPointerException("You must call implementRecyclerAdapterMethods");
         if (i != 0 && mHeader != null) {
-            mRecyclerAdapterMethods.onBindViewHolder(viewHolder, i - 1);
-        } else if (i != 0)
-            mRecyclerAdapterMethods.onBindViewHolder(viewHolder, i);
-        if (mOnClickEvent != null)
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnClickEvent.onClick(v, i - (mHeader == null ? 0 : 1));
-                }
-            });
+            onBindViewHolderImpl(viewHolder,this, i - 1);
+        } else if (i != 0) {
+            onBindViewHolderImpl(viewHolder, this, i);
+        }
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        if (mRecyclerAdapterMethods == null)
-            throw new NullPointerException("You must call implementRecyclerAdapterMethods");
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
         if (i == VIEW_TYPES.HEADER && mHeader != null)
             return new ViewHolder(mHeader);
         if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
-            RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
+            final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
             if (holder != null) {
                 translateHeader(-holder.itemView.getTop());
-                mTotalYScrolled = -holder.itemView.getTop();
+                if (mOnClickEvent != null)
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mOnClickEvent.onClick(v, holder.getAdapterPosition() - (mHeader == null ? 0 : 1));
+                        }
+                    });
             }
         }
-        return mRecyclerAdapterMethods.onCreateViewHolder(viewGroup, i);
+        return onCreateViewHolderImpl(viewGroup,this, i);
     }
 
     /**
@@ -200,27 +187,14 @@ public class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
 
 
     public int getItemCount() {
-        if (mRecyclerAdapterMethods == null)
-            throw new NullPointerException("You must call implementRecyclerAdapterMethods");
-        return mRecyclerAdapterMethods.getItemCount() + (mHeader == null ? 0 : 1);
+        return getItemCountImpl(this) + (mHeader == null ? 0 : 1);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (mRecyclerAdapterMethods == null)
-            throw new NullPointerException("You must call implementRecyclerAdapterMethods");
         if (position == 1)
             return VIEW_TYPES.FIRST_VIEW;
         return position == 0 ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
-    }
-
-    /**
-     * You must call this method to set your normal adapter methods
-     *
-     * @param callbacks
-     */
-    public void implementRecyclerAdapterMethods(RecyclerAdapterMethods callbacks) {
-        mRecyclerAdapterMethods = callbacks;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

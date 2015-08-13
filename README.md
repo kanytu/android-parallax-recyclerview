@@ -30,33 +30,26 @@ android-parallax-recycleview
 
 ```java
 List<String> myContent = new ArrayList<String>(); // or another object list
-ParallaxRecyclerAdapter myAdapter = new ParallaxRecyclerAdapter(myContent); // pass the list to the constructor
-```
+ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
+            @Override
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
+              // If you're using your custom handler (as you should of course) 
+              // you need to cast viewHolder to it.
+              ((MyCustomViewHolder) viewHolder).textView.setText(myContent.get(i)); // your bind holder routine.
+            }
 
- - Implement `ParallaxRecyclerAdapter.RecyclerAdapterMethods`.
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<String> adapter, int i) {
+              // Here is where you inflate your row and pass it to the constructor of your ViewHolder
+              return new MyCustomViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.myRow, viewGroup, false));
+            }
 
-```java
-myAdapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
-  @Override
-  public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-    // If you're using your custom handler (as you should of course) 
-    // you need to cast viewHolder to it.
-    ((MyCustomViewHolder) viewHolder).textView.setText(myContent.get(i)); // your bind holder routine.
-  }
-  
-  @Override
-  public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-    // Here is where you inflate your row and pass it to the constructor of your ViewHolder
-    return new MyCustomViewHolder(LayoutInflater.from(
-               viewGroup.getContext()).inflate(R.layout.myRow, viewGroup, false));
-  }
-  
-  @Override
-  public int getItemCount() {
-    // return the content of your array
-    return myContent.size();
-  }
-});
+            @Override
+            public int getItemCountImpl(ParallaxRecyclerAdapter<String> adapter) {
+              // return the content of your array
+              return myContent.size();
+            }
+        };
 ```
 
  - Now we set the parallax header. You need to pass the `RecyclerView` too to implement the scroll listeners.
