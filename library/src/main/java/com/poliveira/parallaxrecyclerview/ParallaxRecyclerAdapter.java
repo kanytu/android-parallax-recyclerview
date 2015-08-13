@@ -38,11 +38,11 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     public abstract IVH onCreateItemViewHolder(ViewGroup parent);
 
     @SuppressWarnings("UnusedParameters")
-    public void onBindHeaderViewHolder(HVH viewHolder, final int position) {
+    public void onBindHeaderViewHolder(HVH holder, final int position) {
 
     }
 
-    public abstract void onBindItemViewHolder(IVH viewHolder, final int position);
+    public abstract void onBindItemViewHolder(IVH holder, final int position);
 
     public abstract int getItemCountWithoutHeader();
 
@@ -84,13 +84,13 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (position == 0) {
             //noinspection unchecked
-            onBindHeaderViewHolder((HVH) viewHolder, position - 1);
+            onBindHeaderViewHolder((HVH) holder, position - 1);
         } else {
             //noinspection unchecked
-            onBindItemViewHolder((IVH) viewHolder, position - 1);
+            onBindItemViewHolder((IVH) holder, position - 1);
         }
     }
 
