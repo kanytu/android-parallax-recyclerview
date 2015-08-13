@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 /**
  * Created by poliveira on 03/11/2014.
  */
-public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapter.HeaderViewHolder, IVH extends ParallaxRecyclerAdapter.ItemViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public abstract class ParallaxRecyclerAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final float SCROLL_MULTIPLIER = 0.5f;
 
     public static class VIEW_TYPES {
@@ -33,16 +33,18 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
 
     }
 
-    public abstract HVH onCreateHeaderViewHolder(ViewGroup parent);
+    public HeaderViewHolder onCreateHeaderViewHolder(@SuppressWarnings("unused") ViewGroup parent) {
+        return new HeaderViewHolder(mHeader);
+    }
 
-    public abstract IVH onCreateItemViewHolder(ViewGroup parent);
+    public abstract VH onCreateItemViewHolder(ViewGroup parent);
 
     @SuppressWarnings("UnusedParameters")
-    public void onBindHeaderViewHolder(HVH holder, final int position) {
+    public void onBindHeaderViewHolder(HeaderViewHolder holder, final int position) {
 
     }
 
-    public abstract void onBindItemViewHolder(IVH holder, final int position);
+    public abstract void onBindItemViewHolder(VH holder, final int position);
 
     public abstract int getItemCountWithoutHeader();
 
@@ -87,10 +89,10 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         if (position == 0) {
             //noinspection unchecked
-            onBindHeaderViewHolder((HVH) holder, position - 1);
+            onBindHeaderViewHolder((HeaderViewHolder) holder, position - 1);
         } else {
             //noinspection unchecked
-            onBindItemViewHolder((IVH) holder, position - 1);
+            onBindItemViewHolder((VH) holder, position - 1);
         }
     }
 
@@ -157,14 +159,8 @@ public abstract class ParallaxRecyclerAdapter<HVH extends ParallaxRecyclerAdapte
         }
     }
 
-    public static abstract class HeaderViewHolder extends RecyclerView.ViewHolder {
+    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         public HeaderViewHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
-    public static abstract class ItemViewHolder extends RecyclerView.ViewHolder {
-        public ItemViewHolder(View itemView) {
             super(itemView);
         }
     }

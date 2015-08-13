@@ -7,12 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.poliveira.parallaxrecyclerview.HeaderLayoutManagerFixed;
-import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +17,8 @@ import java.util.List;
  * Created by poliveira on 26/02/2015.
  */
 public class MainActivity extends Activity {
-
     private boolean isNormalAdapter = false;
     private RecyclerView mRecyclerView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,90 +45,31 @@ public class MainActivity extends Activity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void createCardAdapter(RecyclerView recyclerView) {
-        final List<String> content = new ArrayList<>();
+    private List<String> getContent() {
+        List<String> content = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             content.add("item " + i);
         }
-        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<>(content);
+        return content;
+    }
+
+    private View getHeader(RecyclerView recyclerView) {
+        return getLayoutInflater().inflate(R.layout.header, recyclerView, false);
+    }
+
+    private void createCardAdapter(RecyclerView recyclerView) {
         HeaderLayoutManagerFixed layoutManagerFixed = new HeaderLayoutManagerFixed(this);
         recyclerView.setLayoutManager(layoutManagerFixed);
-        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
+        View header = getHeader(recyclerView);
         layoutManagerFixed.setHeaderIncrementFixer(header);
-        adapter.setShouldClipView(false);
-        adapter.setParallaxHeader(header, recyclerView);
-        adapter.setData(content);
-        adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
-            @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
-            }
-
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-                final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview_cards, viewGroup, false));
-                //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
-                holder.textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(MainActivity.this, "You clicked '" + adapter.getData().get(holder.getPosition() - (adapter.hasHeader() ? 1 : 0)) + "'", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return holder;
-            }
-
-            @Override
-            public int getItemCount() {
-                return content.size();
-            }
-        });
+        ExampleParallaxRecyclerAdapter adapter = new ExampleParallaxRecyclerAdapter(getContent(), header, recyclerView, false, this, true);
         recyclerView.setAdapter(adapter);
     }
 
     private void createAdapter(RecyclerView recyclerView) {
-        final List<String> content = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            content.add("item " + i);
-        }
-        final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<>(content);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
-        adapter.setParallaxHeader(header, recyclerView);
-        adapter.setData(content);
-        adapter.implementRecyclerAdapterMethods(new ParallaxRecyclerAdapter.RecyclerAdapterMethods() {
-            @Override
-            public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
-            }
-
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-                final ViewHolder holder = new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
-                //don't set listeners on onBindViewHolder. For more info check http://androidshenanigans.blogspot.pt/2015/02/viewholder-pattern-common-mistakes.html
-                holder.textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(MainActivity.this, "You clicked '" + adapter.getData().get(holder.getPosition() - (adapter.hasHeader() ? 1 : 0)) + "'", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return holder;
-            }
-
-            @Override
-            public int getItemCount() {
-                return content.size();
-            }
-        });
+        View header = getHeader(recyclerView);
+        ExampleParallaxRecyclerAdapter adapter = new ExampleParallaxRecyclerAdapter(getContent(), header, recyclerView, true, this, false);
         recyclerView.setAdapter(adapter);
-    }
-
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.textView);
-        }
     }
 }
