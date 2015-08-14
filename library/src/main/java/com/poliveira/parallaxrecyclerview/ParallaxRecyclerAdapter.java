@@ -132,6 +132,7 @@ public abstract class ParallaxRecyclerAdapter<VH extends RecyclerView.ViewHolder
         }
     }
 
+    @SuppressWarnings("unused")
     public View getHeader() {
         return mHeader;
     }
