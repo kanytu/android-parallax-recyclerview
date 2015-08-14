@@ -132,6 +132,10 @@ public abstract class ParallaxRecyclerAdapter<VH extends RecyclerView.ViewHolder
         }
     }
 
+    public View getHeader() {
+        return mHeader;
+    }
+
     static class CustomRelativeWrapper extends RelativeLayout {
         private int mOffset;
         private boolean mShouldClip;
