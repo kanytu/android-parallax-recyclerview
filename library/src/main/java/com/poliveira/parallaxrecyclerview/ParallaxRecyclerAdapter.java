@@ -114,19 +114,21 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         if (i == VIEW_TYPES.HEADER && mHeader != null)
             return new ViewHolder(mHeader);
         if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
-            final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForPosition(0);
+            final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             if (holder != null) {
                 translateHeader(-holder.itemView.getTop());
-                if (mOnClickEvent != null)
-                    holder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mOnClickEvent.onClick(v, holder.getAdapterPosition() - (mHeader == null ? 0 : 1));
-                        }
-                    });
             }
         }
-        return onCreateViewHolderImpl(viewGroup,this, i);
+        final RecyclerView.ViewHolder holder = onCreateViewHolderImpl(viewGroup, this, i);
+        if (mOnClickEvent != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClickEvent.onClick(v, holder.getAdapterPosition() - (mHeader == null ? 0 : 1));
+                }
+            });
+        }
+        return holder;
     }
 
     /**
