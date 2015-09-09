@@ -104,7 +104,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
         if (i != 0 && mHeader != null) {
             onBindViewHolderImpl(viewHolder,this, i - 1);
-        } else if (i != 0) {
+        } else {
             onBindViewHolderImpl(viewHolder, this, i);
         }
     }
