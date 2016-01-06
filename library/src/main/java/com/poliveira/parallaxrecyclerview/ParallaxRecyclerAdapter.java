@@ -63,9 +63,9 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
      */
     public void translateHeader(float of) {
         float ofCalculated = of * SCROLL_MULTIPLIER;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && of < mHeader.getHeight()) {
             mHeader.setTranslationY(ofCalculated);
-        } else {
+        } else if (of < mHeader.getHeight()) {
             TranslateAnimation anim = new TranslateAnimation(0, 0, ofCalculated, ofCalculated);
             anim.setFillAfter(true);
             anim.setDuration(0);
@@ -73,7 +73,13 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         }
         mHeader.setClipY(Math.round(ofCalculated));
         if (mParallaxScroll != null) {
-            float left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
+            final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
+            float left;
+            if (holder != null) {
+                left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
+            }else{
+                left = 100;
+            }
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
         }
     }
@@ -94,7 +100,11 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (mHeader != null) {
-                    translateHeader(mRecyclerView.computeVerticalScrollOffset());
+                    if(mHeader != null){
+                        translateHeader(mRecyclerView.getLayoutManager().getChildAt(0) == mHeader ?
+                                mRecyclerView.computeVerticalScrollOffset() : mHeader.getHeight());
+                    }
+
                 }
             }
         });
