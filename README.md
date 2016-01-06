@@ -15,7 +15,7 @@ android-parallax-recycleview
 **Step 2.** Add the dependency
 
     dependencies {
-    	compile 'com.github.kanytu:android-parallax-recyclerview:v1.4'
+    	compile 'com.github.kanytu:android-parallax-recyclerview:v1.5'
     }
 
 
