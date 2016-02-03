@@ -78,7 +78,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             if (holder != null) {
                 left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
             }else{
-                left = 100;
+                left = 1;
             }
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
         }
