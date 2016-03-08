@@ -238,4 +238,20 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             invalidate();
         }
     }
+    /**
+     * Set parallax scroll multiplier.
+     *
+     * @param mul The multiplier
+     */
+    public void setScrollMultiplier(float mul) {
+        this.SCROLL_MULTIPLIER = mul;
+    }
+
+    /**
+     * Get the current parallax scroll multiplier.
+     *
+     */
+    public float getScrollMultiplier() {
+        return this.SCROLL_MULTIPLIER;
+    }
 }
