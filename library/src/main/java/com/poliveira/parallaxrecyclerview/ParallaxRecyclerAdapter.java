@@ -14,7 +14,7 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final float SCROLL_MULTIPLIER = 0.5f;
+    private float SCROLL_MULTIPLIER = 0.5f;
 
     public static class VIEW_TYPES {
         public static final int NORMAL = 1;
