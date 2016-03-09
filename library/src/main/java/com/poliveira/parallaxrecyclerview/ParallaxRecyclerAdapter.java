@@ -111,25 +111,25 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
-        if (i != 0 && mHeader != null) {
-            onBindViewHolderImpl(viewHolder,this, i - 1);
-        } else if (i != 0) {
-            onBindViewHolderImpl(viewHolder, this, i);
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
+        if (position != 0 && mHeader != null) {
+            onBindViewHolderImpl(viewHolder,this, position - 1);
+        } else {
+            onBindViewHolderImpl(viewHolder, this, position);
         }
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
-        if (i == VIEW_TYPES.HEADER && mHeader != null)
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int viewType) {
+        if (viewType == VIEW_TYPES.HEADER && mHeader != null)
             return new ViewHolder(mHeader);
-        if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
+        if (viewType == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             if (holder != null) {
                 translateHeader(-holder.itemView.getTop());
             }
         }
-        final RecyclerView.ViewHolder holder = onCreateViewHolderImpl(viewGroup, this, i);
+        final RecyclerView.ViewHolder holder = onCreateViewHolderImpl(viewGroup, this, viewType);
         if (mOnClickEvent != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
