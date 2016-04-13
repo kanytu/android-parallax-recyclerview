@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final float SCROLL_MULTIPLIER = 0.5f;
+    private float mScrollMultiplier = 0.5f;
 
     public static class VIEW_TYPES {
         public static final int NORMAL = 1;
@@ -57,7 +57,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
      * @param of offset in px
      */
     public void translateHeader(float of) {
-        float ofCalculated = of * SCROLL_MULTIPLIER;
+        float ofCalculated = of * mScrollMultiplier;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && of < mHeader.getHeight()) {
             mHeader.setTranslationY(ofCalculated);
         } else if (of < mHeader.getHeight()) {
@@ -71,8 +71,8 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             float left;
             if (holder != null) {
-                left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
-            } else {
+                left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * mScrollMultiplier)));
+            }else {
                 left = 1;
             }
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
@@ -233,5 +233,21 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             mOffset = offset;
             invalidate();
         }
+    }
+    /**
+     * Set parallax scroll multiplier.
+     *
+     * @param mul The multiplier
+     */
+    public void setScrollMultiplier(float mul) {
+        this.mScrollMultiplier = mul;
+    }
+
+    /**
+     * Get the current parallax scroll multiplier.
+     *
+     */
+    public float getScrollMultiplier() {
+        return this.mScrollMultiplier;
     }
 }
