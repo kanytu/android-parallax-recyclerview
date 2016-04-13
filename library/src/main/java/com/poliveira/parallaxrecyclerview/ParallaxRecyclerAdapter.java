@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
@@ -22,9 +21,9 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         public static final int FIRST_VIEW = 3;
     }
 
-    public abstract void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder,ParallaxRecyclerAdapter<T> adapter,  int i);
+    public abstract void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<T> adapter, int i);
 
-    public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup,ParallaxRecyclerAdapter<T> adapter, int i);
+    public abstract RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, ParallaxRecyclerAdapter<T> adapter, int i);
 
     public abstract int getItemCountImpl(ParallaxRecyclerAdapter<T> adapter);
 
@@ -41,10 +40,6 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     public interface OnParallaxScroll {
         /**
          * Event triggered when the parallax is being scrolled.
-         *
-         * @param percentage
-         * @param offset
-         * @param parallax
          */
         void onParallaxScroll(float percentage, float offset, View parallax);
     }
@@ -77,7 +72,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             float left;
             if (holder != null) {
                 left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * SCROLL_MULTIPLIER)));
-            }else{
+            } else {
                 left = 1;
             }
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
@@ -100,10 +95,8 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (mHeader != null) {
-                    if(mHeader != null){
-                        translateHeader(mRecyclerView.getLayoutManager().getChildAt(0) == mHeader ?
-                                mRecyclerView.computeVerticalScrollOffset() : mHeader.getHeight());
-                    }
+                    translateHeader(mRecyclerView.getLayoutManager().getChildAt(0) == mHeader ?
+                            mRecyclerView.computeVerticalScrollOffset() : mHeader.getHeight());
 
                 }
             }
@@ -112,17 +105,21 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
-        if (i != 0 && mHeader != null) {
-            onBindViewHolderImpl(viewHolder,this, i - 1);
-        } else if (i != 0) {
+        if (mHeader != null) {
+            if (i == 0) {
+                return;
+            }
+            onBindViewHolderImpl(viewHolder, this, i - 1);
+        } else {
             onBindViewHolderImpl(viewHolder, this, i);
         }
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
-        if (i == VIEW_TYPES.HEADER && mHeader != null)
+        if (i == VIEW_TYPES.HEADER && mHeader != null) {
             return new ViewHolder(mHeader);
+        }
         if (i == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             if (holder != null) {
@@ -158,9 +155,8 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     }
 
     /**
-     * Defines if we will clip the layout or not. MUST BE CALLED BEFORE {@link #setParallaxHeader(android.view.View, android.support.v7.widget.RecyclerView)}
-     *
-     * @param shouldClickView
+     * Defines if we will clip the layout or not. MUST BE CALLED BEFORE {@link
+     * #setParallaxHeader(android.view.View, android.support.v7.widget.RecyclerView)}
      */
     public void setShouldClipView(boolean shouldClickView) {
         mShouldClipView = shouldClickView;
@@ -206,7 +202,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     public int getItemViewType(int position) {
         if (position == 1)
             return VIEW_TYPES.FIRST_VIEW;
-        return position == 0 ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
+        return position == 0 && mHeader != null ? VIEW_TYPES.HEADER : VIEW_TYPES.NORMAL;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
