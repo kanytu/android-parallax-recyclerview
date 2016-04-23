@@ -1,4 +1,4 @@
-android-parallax-recycleview
+android-parallax-recyclerview
 ============================
 
 **Integration**
