@@ -56,18 +56,23 @@ public class MainActivity extends Activity {
 
         final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, int i) {
+                ((ViewHolder) viewHolder).textView.setText(getData().get(i));
             }
 
             @Override
-            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<String> adapter, int i) {
+            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, int i) {
                 return new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview_cards, viewGroup, false));
             }
 
             @Override
-            public int getItemCountImpl(ParallaxRecyclerAdapter<String> adapter) {
+            public int getItemCountImpl() {
                 return content.size();
+            }
+
+            @Override
+            public int getItemViewTypeImpl(int position) {
+                return 0;
             }
         };
 
@@ -96,18 +101,31 @@ public class MainActivity extends Activity {
 
         final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
-                ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, int i) {
+                if (viewHolder instanceof ViewHolder)
+                    ((ViewHolder) viewHolder).textView.setText(getData().get(i));
             }
 
             @Override
-            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, final ParallaxRecyclerAdapter<String> adapter, int i) {
-                return new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
+            public RecyclerView.ViewHolder onCreateViewHolderImpl(ViewGroup viewGroup, int type) {
+
+                if (type == 0)
+                    return new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview, viewGroup, false));
+                else if (type == 1)
+                    return new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview2, viewGroup, false));
+                else
+                    return new ViewHolder(getLayoutInflater().inflate(R.layout.row_recyclerview3, viewGroup, false));
+
             }
 
             @Override
-            public int getItemCountImpl(ParallaxRecyclerAdapter<String> adapter) {
+            public int getItemCountImpl() {
                 return content.size();
+            }
+
+            @Override
+            public int getItemViewTypeImpl(int position) {
+                return position % 3;
             }
         };
 
