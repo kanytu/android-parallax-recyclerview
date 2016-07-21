@@ -101,7 +101,7 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
-        if (mHeader != null) {
+        if (hasHeader()) {
             if (i == 0) {
                 return;
             }
@@ -113,11 +113,11 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int type) {
-        if (type == VIEW_TYPES.HEADER && mHeader != null) {
+        if (type == VIEW_TYPES.HEADER && hasHeader()) {
             return new ViewHolder(mHeader);
         }
 
-        if (isFirstViewType(type)  && mHeader != null && mRecyclerView != null) {
+        if (isFirstViewType(type)  && hasHeader() && mRecyclerView != null) {
 //        if (type == VIEW_TYPES.FIRST_VIEW && mHeader != null && mRecyclerView != null) {
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             if (holder != null) {
@@ -125,13 +125,13 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
             }
         }
 
-        int actualType = isFirstViewType(type) ? converFromsInternalItemType(type) : type;
+        int actualType = isFirstViewType(type) ? convertFromInternalItemType(type) : type;
         final RecyclerView.ViewHolder holder = onCreateViewHolderImpl(viewGroup, actualType);
         if (mOnClickEvent != null) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnClickEvent.onClick(v, holder.getAdapterPosition() - (mHeader == null ? 0 : 1));
+                    mOnClickEvent.onClick(v, holder.getAdapterPosition() - (!hasHeader() ? 0 : 1));
                 }
             });
         }
@@ -171,31 +171,31 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
 
 
     public void notifyItemInsertedImpl(int position) {
-        super.notifyItemInserted(position + (mHeader == null ? 0 : 1));
+        super.notifyItemInserted(position + (!hasHeader() ? 0 : 1));
     }
 
     public int translatePosition(int pos){
-        return pos + (mHeader == null ? 0 : 1);
+        return pos + (!hasHeader() ? 0 : 1);
     };
 
     public void notifyItemRemovedImpl(int position) {
         if (position < 0)
             return;
-        notifyItemRemoved(position + (mHeader == null ? 0 : 1));
+        notifyItemRemoved(position + (!hasHeader() ? 0 : 1));
     }
 
     public int getItemCount() {
-        return getItemCountImpl() + (mHeader == null ? 0 : 1);
+        return getItemCountImpl() + (!hasHeader() ? 0 : 1);
     }
 
     @Override
     public int getItemViewType(int position) {
         int realType = getItemViewTypeImpl(position);
         if (position == 1) {
-            return converToInternalItemType(realType);
+            return convertToInternalItemType(realType);
         }
 
-        return position == 0 && mHeader != null ? VIEW_TYPES.HEADER : realType;
+        return position == 0 && hasHeader() ? VIEW_TYPES.HEADER : realType;
     }
 
     private boolean isHeaderType(int type){
@@ -206,11 +206,11 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
         return type < 0;
     }
 
-    private int converToInternalItemType(int type){
+    private int convertToInternalItemType(int type){
         return VIEW_TYPES.FIRST_VIEW_SHIFT + type;
     }
 
-    private int converFromsInternalItemType(int type){
+    private int convertFromInternalItemType(int type){
         return VIEW_TYPES.FIRST_VIEW_SHIFT + type;
     }
 
