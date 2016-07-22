@@ -191,7 +191,7 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
     @Override
     public int getItemViewType(int pos) {
         if (!hasHeader()){
-            return getItemViewTypeImpl(translatePosition(pos));
+            return getItemViewTypeImpl(pos);
         }
 
         // here wi do have header
@@ -199,7 +199,7 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
             return VIEW_TYPES.HEADER;
         }
 
-        int realType = getItemViewTypeImpl(translatePosition(pos));
+        int realType = getItemViewTypeImpl(pos-1);
         if (pos == 1) {
             return convertToInternalItemType(realType);
         }
