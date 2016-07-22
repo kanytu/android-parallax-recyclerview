@@ -73,6 +73,8 @@ void onParallaxScroll(float percentage, float offset, View parallax);
 
 ![ParallaxListView](https://raw.githubusercontent.com/kanytu/android-parallax-recycleview/master/screenshots/screenshot.gif)
 
+**VIEW TYPES**
+You can use your view type within interval from [0 to INT_MAX-1]
 
 **COOL EFFECTS YOU CAN DO WITH THIS LIBRARY**
 

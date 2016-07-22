@@ -100,14 +100,14 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int position) {
         if (hasHeader()) {
-            if (i == 0) {
+            if (position == 0) {
                 return;
             }
-            onBindViewHolderImpl(viewHolder, i - 1);
+            onBindViewHolderImpl(viewHolder, position - 1);
         } else {
-            onBindViewHolderImpl(viewHolder, i);
+            onBindViewHolderImpl(viewHolder, position);
         }
     }
 
@@ -189,13 +189,22 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
     }
 
     @Override
-    public int getItemViewType(int position) {
-        int realType = getItemViewTypeImpl(position);
-        if (position == 1) {
+    public int getItemViewType(int pos) {
+        if (!hasHeader()){
+            return getItemViewTypeImpl(translatePosition(pos));
+        }
+
+        // here wi do have header
+        if (pos == 0){
+            return VIEW_TYPES.HEADER;
+        }
+
+        int realType = getItemViewTypeImpl(translatePosition(pos));
+        if (pos == 1) {
             return convertToInternalItemType(realType);
         }
 
-        return position == 0 && hasHeader() ? VIEW_TYPES.HEADER : realType;
+        return realType;
     }
 
     private boolean isHeaderType(int type){
