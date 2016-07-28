@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,15 +65,29 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
         }
         mHeader.setClipY(Math.round(ofCalculated));
         if (mParallaxScroll != null) {
+            int firstVisible = getFirstVisibleIndex();
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
+
             float left;
-            if (holder != null) {
+            if (holder != null && firstVisible == 0) {
                 left = Math.min(1, ((ofCalculated) / (mHeader.getHeight() * mScrollMultiplier)));
             }else {
                 left = 1;
             }
             mParallaxScroll.onParallaxScroll(left, of, mHeader);
         }
+    }
+
+    private int getFirstVisibleIndex() {
+        if (mRecyclerView == null)
+            return -1;
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager)mRecyclerView.getLayoutManager();
+
+        if (layoutManager == null)
+            return -1;
+
+        return layoutManager.findFirstVisibleItemPosition();
     }
 
     /**
@@ -83,6 +98,12 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
      */
     public void setParallaxHeader(View header, final RecyclerView view) {
         mRecyclerView = view;
+
+        if (mRecyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+        //OK
+        }else{
+            throw new IllegalArgumentException("Should use only LinearLayoutManager");
+        }
         mHeader = new CustomRelativeWrapper(header.getContext(), mShouldClipView);
         mHeader.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mHeader.addView(header, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -93,7 +114,6 @@ public abstract class AbstractParallaxRecyclerAdapter extends RecyclerView.Adapt
                 if (mHeader != null) {
                     translateHeader(mRecyclerView.getLayoutManager().getChildAt(0) == mHeader ?
                             mRecyclerView.computeVerticalScrollOffset() : mHeader.getHeight());
-
                 }
             }
         });
