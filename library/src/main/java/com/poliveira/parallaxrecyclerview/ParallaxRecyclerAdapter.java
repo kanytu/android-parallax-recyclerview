@@ -66,7 +66,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
             anim.setDuration(0);
             mHeader.startAnimation(anim);
         }
-        mHeader.setClipY(Math.round(ofCalculated));
+        mHeader.setClipY(Math.round(of-ofCalculated));
         if (mParallaxScroll != null) {
             final RecyclerView.ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(0);
             float left;
