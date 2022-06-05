@@ -5,19 +5,23 @@ import android.graphics.PointF;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
+import java.util.Objects;
 
 /**
- * A {@link android.support.v7.widget.RecyclerView.LayoutManager} implementation which provides
+ * A {@link androidx.recyclerview.widget.RecyclerView.LayoutManager} implementation which provides
  * similar functionality to {@link android.widget.ListView}.
  */
 public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
@@ -224,7 +228,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     /**
-     * Sets the orientation of the layout. {@link android.support.v7.widget.LinearLayoutManager}
+     * Sets the orientation of the layout. {@link androidx.recyclerview.widget.LinearLayoutManager}
      * will do its best to keep scroll position.
      *
      * @param orientation {@link #HORIZONTAL} or {@link #VERTICAL}
@@ -275,8 +279,8 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
      * rendered at the end of the UI, second item is render before it etc.
      * <p/>
      * For horizontal layouts, it depends on the layout direction.
-     * When set to true, If {@link android.support.v7.widget.RecyclerView} is LTR, than it will
-     * render from RTL, if {@link android.support.v7.widget.RecyclerView}} is RTL, it will render
+     * When set to true, If {@link RecyclerView} is LTR, than it will
+     * render from RTL, if {@link RecyclerView}} is RTL, it will render
      * from LTR.
      * <p/>
      * If you are looking for the exact same behavior of
@@ -304,7 +308,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         if (childCount == 0) {
             return null;
         }
-        final int firstChild = getPosition(getChildAt(0));
+        final int firstChild = getPosition(Objects.requireNonNull(getChildAt(0)));
         final int viewPosition = position - firstChild;
         if (viewPosition >= 0 && viewPosition < childCount) {
             return getChildAt(viewPosition);
@@ -314,7 +318,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
 
     /**
      * <p>Returns the amount of extra space that should be rendered by LinearLayoutManager.
-     * By default, {@link android.support.v7.widget.LinearLayoutManager} lays out 1 extra page of
+     * By default, {@link androidx.recyclerview.widget.LinearLayoutManager} lays out 1 extra page of
      * items while smooth scrolling and 0 otherwise. You can override this method to implement your
      * custom layout pre-cache logic.</p>
      * <p>Laying out invisible elements will eventually come with performance cost. On the other
@@ -324,7 +328,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
      *
      * @return The extra space that should be laid out (in pixels).
      */
-    protected int getExtraLayoutSpace(RecyclerView.State state) {
+    protected int getExtraLayoutSpace(@NonNull RecyclerView.State state) {
         if (state.hasTargetScrollPosition()) {
             return mOrientationHelper.getTotalSpace();
         } else {
@@ -333,7 +337,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state,
+    public void smoothScrollToPosition(@NonNull RecyclerView recyclerView, RecyclerView.State state,
                                        int position) {
         LinearSmoothScroller linearSmoothScroller =
                 new LinearSmoothScroller(recyclerView.getContext()) {
@@ -351,7 +355,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         if (getChildCount() == 0) {
             return null;
         }
-        final int firstChildPos = getPosition(getChildAt(0));
+        final int firstChildPos = getPosition(Objects.requireNonNull(getChildAt(0)));
         final int direction = targetPosition < firstChildPos != mShouldReverseLayout ? -1 : 1;
         if (mOrientation == HORIZONTAL) {
             return new PointF(direction, 0);
@@ -444,7 +448,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
                 } else { // item is not visible.
                     if (getChildCount() > 0) {
                         // get position of any child, does not matter
-                        int pos = getPosition(getChildAt(0));
+                        int pos = getPosition(Objects.requireNonNull(getChildAt(0)));
                         if (mPendingScrollPosition < pos == mShouldReverseLayout) {
                             anchorCoordinate = mOrientationHelper.getEndAfterPadding();
                             layoutFromEnd = true;
@@ -544,10 +548,10 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
             int scrapExtraStart = 0, scrapExtraEnd = 0;
             final List<RecyclerView.ViewHolder> scrapList = recycler.getScrapList();
             final int scrapSize = scrapList.size();
-            final int firstChildPos = getPosition(getChildAt(0));
+            final int firstChildPos = getPosition(Objects.requireNonNull(getChildAt(0)));
             for (int i = 0; i < scrapSize; i++) {
                 RecyclerView.ViewHolder scrap = scrapList.get(i);
-                final int position = scrap.getPosition();
+                final int position = scrap.getBindingAdapterPosition();
                 final int direction = position < firstChildPos != mShouldReverseLayout
                         ? RenderState.LAYOUT_START : RenderState.LAYOUT_END;
                 if (direction == RenderState.LAYOUT_START) {
@@ -599,7 +603,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     private int fixLayoutEndGap(int endOffset, RecyclerView.Recycler recycler,
                                 RecyclerView.State state, boolean canOffsetChildren) {
         int gap = mOrientationHelper.getEndAfterPadding() - endOffset;
-        int fixOffset = 0;
+        int fixOffset;
         if (gap > 0) {
             fixOffset = -scrollBy(-gap, recycler, state);
         } else {
@@ -624,7 +628,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     private int fixLayoutStartGap(int startOffset, RecyclerView.Recycler recycler,
                                   RecyclerView.State state, boolean canOffsetChildren) {
         int gap = startOffset - mOrientationHelper.getStartAfterPadding();
-        int fixOffset = 0;
+        int fixOffset;
         if (gap > 0) {
             // check if we should fix this gap.
             fixOffset = -scrollBy(gap, recycler, state);
@@ -746,7 +750,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public int computeHorizontalScrollOffset(RecyclerView.State state) {
+    public int computeHorizontalScrollOffset(@NonNull RecyclerView.State state) {
         if (getChildCount() == 0) {
             return 0;
         }
@@ -755,7 +759,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public int computeVerticalScrollOffset(RecyclerView.State state) {
+    public int computeVerticalScrollOffset(@NonNull RecyclerView.State state) {
         if (getChildCount() == 0) {
             return 0;
         }
@@ -764,22 +768,22 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public int computeHorizontalScrollExtent(RecyclerView.State state) {
+    public int computeHorizontalScrollExtent(@NonNull RecyclerView.State state) {
         return getChildCount();
     }
 
     @Override
-    public int computeVerticalScrollExtent(RecyclerView.State state) {
+    public int computeVerticalScrollExtent(@NonNull RecyclerView.State state) {
         return getChildCount();
     }
 
     @Override
-    public int computeHorizontalScrollRange(RecyclerView.State state) {
+    public int computeHorizontalScrollRange(@NonNull RecyclerView.State state) {
         return state.getItemCount();
     }
 
     @Override
-    public int computeVerticalScrollRange(RecyclerView.State state) {
+    public int computeVerticalScrollRange(@NonNull RecyclerView.State state) {
         return state.getItemCount();
     }
 
@@ -867,7 +871,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     /**
      * Recycles views that went out of bounds after scrolling towards the end of the layout.
      *
-     * @param recycler Recycler instance of {@link android.support.v7.widget.RecyclerView}
+     * @param recycler Recycler instance of {@link RecyclerView}
      * @param dt       This can be used to add additional padding to the visible area. This is used
      *                 to
      *                 detect children that will go out of bounds after scrolling, without actually
@@ -906,7 +910,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     /**
      * Recycles views that went out of bounds after scrolling towards the start of the layout.
      *
-     * @param recycler Recycler instance of {@link android.support.v7.widget.RecyclerView}
+     * @param recycler Recycler instance of {@link RecyclerView}
      * @param dt       This can be used to add additional padding to the visible area. This is used
      *                 to detect children that will go out of bounds after scrolling, without
      *                 actually moving them.
@@ -949,10 +953,10 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
      * @param renderState Current render state. Right now, this object does not change but
      *                    we may consider moving it out of this view so passing around as a
      *                    parameter for now, rather than accessing {@link #mRenderState}
-     * @see #recycleViewsFromStart(android.support.v7.widget.RecyclerView.Recycler, int)
-     * @see #recycleViewsFromEnd(android.support.v7.widget.RecyclerView.Recycler, int)
+     * @see #recycleViewsFromStart(RecyclerView.Recycler, int)
+     * @see #recycleViewsFromEnd(RecyclerView.Recycler, int)
      */
-    private void recycleByRenderState(RecyclerView.Recycler recycler, RenderState renderState) {
+    private void recycleByRenderState(RecyclerView.Recycler recycler, @NonNull RenderState renderState) {
         if (renderState.mLayoutDirection == RenderState.LAYOUT_START) {
             recycleViewsFromEnd(recycler, renderState.mScrollingOffset);
         } else {
@@ -962,7 +966,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
 
     /**
      * The magic functions :). Fills the given layout, defined by the renderState. This is fairly
-     * independent from the rest of the {@link android.support.v7.widget.LinearLayoutManager}
+     * independent from the rest of the {@link androidx.recyclerview.widget.LinearLayoutManager}
      * and with little change, can be made publicly available as a helper class.
      *
      * @param recycler        Current recycler that is attached to RecyclerView
@@ -971,7 +975,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
      * @param stopOnFocusable If true, filling stops in the first focusable new child
      * @return Number of pixels that it added. Useful for scoll functions.
      */
-    private int fill(RecyclerView.Recycler recycler, RenderState renderState,
+    private int fill(RecyclerView.Recycler recycler, @NonNull RenderState renderState,
                      RecyclerView.State state,
                      boolean stopOnFocusable) {
         // max offset we should set is mFastScroll + available
@@ -1211,9 +1215,11 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
             if (childStart < end && childEnd > start) {
                 if (completelyVisible) {
                     if (childStart >= start && childEnd <= end) {
+                        assert child != null;
                         return getPosition(child);
                     }
                 } else {
+                    assert child != null;
                     return getPosition(child);
                 }
             }
@@ -1222,9 +1228,9 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     }
 
     @Override
-    public View onFocusSearchFailed(View focused, int focusDirection,
-                                    RecyclerView.Recycler recycler,
-                                    RecyclerView.State state) {
+    public View onFocusSearchFailed(@NonNull View focused, int focusDirection,
+                                    @NonNull RecyclerView.Recycler recycler,
+                                    @NonNull RecyclerView.State state) {
         resolveShouldLayoutReverse();
         if (getChildCount() == 0) {
             return null;
@@ -1266,6 +1272,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         Log.d(TAG, "internal representation of views on the screen");
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
+            assert child != null;
             Log.d(TAG, "item " + getPosition(child) + ", coord:"
                     + mOrientationHelper.getDecoratedStart(child));
         }
@@ -1287,11 +1294,12 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         if (getChildCount() < 1) {
             return;
         }
-        int lastPos = getPosition(getChildAt(0));
+        int lastPos = getPosition(Objects.requireNonNull(getChildAt(0)));
         int lastScreenLoc = mOrientationHelper.getDecoratedStart(getChildAt(0));
         if (mShouldReverseLayout) {
             for (int i = 1; i < getChildCount(); i++) {
                 View child = getChildAt(i);
+                assert child != null;
                 int pos = getPosition(child);
                 int screenLoc = mOrientationHelper.getDecoratedStart(child);
                 if (pos < lastPos) {
@@ -1307,6 +1315,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         } else {
             for (int i = 1; i < getChildCount(); i++) {
                 View child = getChildAt(i);
+                assert child != null;
                 int pos = getPosition(child);
                 int screenLoc = mOrientationHelper.getDecoratedStart(child);
                 if (pos < lastPos) {
@@ -1423,13 +1432,14 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
          *
          * @return View if an item in the current position or direction exists if not null.
          */
+        @Nullable
         private View nextFromLimitedList() {
             int size = mScrapList.size();
             RecyclerView.ViewHolder closest = null;
             int closestDistance = Integer.MAX_VALUE;
             for (int i = 0; i < size; i++) {
                 RecyclerView.ViewHolder viewHolder = mScrapList.get(i);
-                final int distance = (viewHolder.getPosition() - mCurrentPosition) * mItemDirection;
+                final int distance = (viewHolder.getBindingAdapterPosition() - mCurrentPosition) * mItemDirection;
                 if (distance < 0) {
                     continue; // item is not in current direction
                 }
@@ -1443,7 +1453,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
             }
 
             if (closest != null) {
-                mCurrentPosition = closest.getPosition() + mItemDirection;
+                mCurrentPosition = closest.getBindingAdapterPosition() + mItemDirection;
                 return closest.itemView;
             }
             return null;
@@ -1456,7 +1466,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         return mHeaderIncrementFixer;
     }
 
-    public void setHeaderIncrementFixer(final View headerIncrementFixer) {
+    public void setHeaderIncrementFixer(@NonNull final View headerIncrementFixer) {
         headerIncrementFixer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -1579,7 +1589,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
     /**
      * Helper interface to offload orientation based decisions
      */
-    static interface OrientationHelper {
+    interface OrientationHelper {
 
         /**
          * @param view The view element to check
@@ -1651,7 +1661,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
 
         }
 
-        SavedState(Parcel in) {
+        SavedState(@NonNull Parcel in) {
             mOrientation = in.readInt();
             mAnchorPosition = in.readInt();
             mAnchorOffset = in.readInt();
@@ -1660,7 +1670,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
             mAnchorLayoutFromEnd = in.readInt() == 1;
         }
 
-        public SavedState(SavedState other) {
+        public SavedState(@NonNull SavedState other) {
             mOrientation = other.mOrientation;
             mAnchorPosition = other.mAnchorPosition;
             mAnchorOffset = other.mAnchorOffset;
@@ -1675,7 +1685,7 @@ public class HeaderLayoutManagerFixed extends RecyclerView.LayoutManager {
         }
 
         @Override
-        public void writeToParcel(Parcel dest, int flags) {
+        public void writeToParcel(@NonNull Parcel dest, int flags) {
             dest.writeInt(mOrientation);
             dest.writeInt(mAnchorPosition);
             dest.writeInt(mAnchorOffset);

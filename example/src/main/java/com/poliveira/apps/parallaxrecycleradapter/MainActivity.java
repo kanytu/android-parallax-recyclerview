@@ -2,14 +2,16 @@ package com.poliveira.apps.parallaxrecycleradapter;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.poliveira.parallaxrecyclerview.HeaderLayoutManagerFixed;
 import com.poliveira.parallaxrecyclerview.ParallaxRecyclerAdapter;
@@ -22,12 +24,11 @@ public class MainActivity extends Activity {
     private boolean isNormalAdapter = false;
     private RecyclerView mRecyclerView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerX);
         createAdapter(mRecyclerView);
     }
 
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
 
         final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, @NonNull ParallaxRecyclerAdapter<String> adapter, int i) {
                 ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
             }
 
@@ -71,12 +72,8 @@ public class MainActivity extends Activity {
             }
         };
 
-        adapter.setOnClickEvent(new ParallaxRecyclerAdapter.OnClickEvent() {
-            @Override
-            public void onClick(View v, int position) {
-                Toast.makeText(MainActivity.this, "You clicked '" + position + "'", Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter.setOnClickEvent((v, position) ->
+                Toast.makeText(MainActivity.this, "You clicked '" + position + "'", Toast.LENGTH_SHORT).show());
 
         HeaderLayoutManagerFixed layoutManagerFixed = new HeaderLayoutManagerFixed(this);
         recyclerView.setLayoutManager(layoutManagerFixed);
@@ -96,7 +93,7 @@ public class MainActivity extends Activity {
 
         final ParallaxRecyclerAdapter<String> adapter = new ParallaxRecyclerAdapter<String>(content) {
             @Override
-            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, ParallaxRecyclerAdapter<String> adapter, int i) {
+            public void onBindViewHolderImpl(RecyclerView.ViewHolder viewHolder, @NonNull ParallaxRecyclerAdapter<String> adapter, int i) {
                 ((ViewHolder) viewHolder).textView.setText(adapter.getData().get(i));
             }
 
@@ -111,12 +108,8 @@ public class MainActivity extends Activity {
             }
         };
 
-        adapter.setOnClickEvent(new ParallaxRecyclerAdapter.OnClickEvent() {
-            @Override
-            public void onClick(View v, int position) {
-                Toast.makeText(MainActivity.this, "You clicked '" + position + "'", Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter.setOnClickEvent((v, position) ->
+                Toast.makeText(MainActivity.this, "You clicked '" + position + "'", Toast.LENGTH_SHORT).show());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         View header = getLayoutInflater().inflate(R.layout.header, recyclerView, false);
@@ -124,7 +117,6 @@ public class MainActivity extends Activity {
         adapter.setData(content);
         recyclerView.setAdapter(adapter);
     }
-
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textView;
