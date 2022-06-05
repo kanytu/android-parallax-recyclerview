@@ -1,16 +1,20 @@
 package com.poliveira.parallaxrecyclerview;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
+import java.util.Objects;
 
 public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private float mScrollMultiplier = 0.5f;
@@ -58,7 +62,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
      */
     public void translateHeader(float of) {
         float ofCalculated = of * mScrollMultiplier;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && of < mHeader.getHeight()) {
+        if (of < mHeader.getHeight()) {
             mHeader.setTranslationY(ofCalculated);
         } else if (of < mHeader.getHeight()) {
             TranslateAnimation anim = new TranslateAnimation(0, 0, ofCalculated, ofCalculated);
@@ -85,17 +89,17 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
      * @param header The inflated header
      * @param view   The RecyclerView to set scroll listeners
      */
-    public void setParallaxHeader(View header, final RecyclerView view) {
+    public void setParallaxHeader(@NonNull View header, @NonNull final RecyclerView view) {
         mRecyclerView = view;
         mHeader = new CustomRelativeWrapper(header.getContext(), mShouldClipView);
         mHeader.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mHeader.addView(header, new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        view.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        view.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (mHeader != null) {
-                    translateHeader(mRecyclerView.getLayoutManager().getChildAt(0) == mHeader ?
+                    translateHeader(Objects.requireNonNull(mRecyclerView.getLayoutManager()).getChildAt(0) == mHeader ?
                             mRecyclerView.computeVerticalScrollOffset() : mHeader.getHeight());
 
                 }
@@ -104,7 +108,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, final int i) {
         if (mHeader != null) {
             if (i == 0) {
                 return;
@@ -115,8 +119,9 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         }
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, final int i) {
         if (i == VIEW_TYPES.HEADER && mHeader != null) {
             return new ViewHolder(mHeader);
         }
@@ -128,12 +133,8 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         }
         final RecyclerView.ViewHolder holder = onCreateViewHolderImpl(viewGroup, this, i);
         if (mOnClickEvent != null) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnClickEvent.onClick(v, holder.getAdapterPosition() - (mHeader == null ? 0 : 1));
-                }
-            });
+            holder.itemView.setOnClickListener(v ->
+                    mOnClickEvent.onClick(v, holder.getBindingAdapterPosition() - (mHeader == null ? 0 : 1)));
         }
         return holder;
     }
@@ -155,8 +156,8 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
     }
 
     /**
-     * Defines if we will clip the layout or not. MUST BE CALLED BEFORE {@link
-     * #setParallaxHeader(android.view.View, android.support.v7.widget.RecyclerView)}
+     * Defines if we will clip the layout or not. MUST BE CALLED BEFORE
+     * {@link #setParallaxHeader(View, RecyclerView)}
      */
     public void setShouldClipView(boolean shouldClickView) {
         mShouldClipView = shouldClickView;
@@ -175,6 +176,7 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         return mData;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setData(List<T> data) {
         mData = data;
         notifyDataSetChanged();
@@ -211,10 +213,12 @@ public abstract class ParallaxRecyclerAdapter<T> extends RecyclerView.Adapter<Re
         }
     }
 
+
+    @SuppressLint("ViewConstructor")
     static class CustomRelativeWrapper extends RelativeLayout {
 
         private int mOffset;
-        private boolean mShouldClip;
+        private final boolean mShouldClip;
 
         public CustomRelativeWrapper(Context context, boolean shouldClick) {
             super(context);
